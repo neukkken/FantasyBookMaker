@@ -13,9 +13,6 @@ asarUnpack:
   - resources/**
 win:
   executableName: fantasybook-maker
-  # Opcional: firma digital para evitar Windows Defender
-  # certificateFile: ./cert.p12
-  # certificatePassword: ${CERT_PASSWORD}
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
