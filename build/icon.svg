@@ -55,6 +55,7 @@
   <circle cx="72" cy="448" r="10" fill="url(#oro)" opacity="0.2"/>
   <circle cx="440" cy="448" r="10" fill="url(#oro)" opacity="0.2"/>
 
+  <g transform="translate(-39, 0)">
   <!-- Libro - portada izquierda -->
   <path d="M148 440V160c0-20 14-36 38-36h90c24 0 38 16 38 36v280"
         fill="url(#pagina)" stroke="url(#oro)" stroke-width="3" filter="url(#sombra)"/>
@@ -114,7 +115,7 @@
   <rect x="330" y="350" width="45" height="3" rx="1.5" fill="#8a7337" opacity="0.15"/>
   <rect x="330" y="368" width="75" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
 
-  <!-- Letra capital F -->
+  <!-- Letra capital decorativa -->
   <text x="170" y="170" font-family="'Playfair Display', Georgia, serif" font-size="24"
         fill="url(#sangre)" font-weight="bold" font-style="italic" opacity="0.4">F</text>
 
@@ -123,6 +124,7 @@
   <path d="M288 400c0-12 12-22 24-22s24 10 24 22" fill="url(#sangre)" stroke="#660000" stroke-width="1.5"/>
   <line x1="300" y1="442" x2="300" y2="460" stroke="url(#sangre)" stroke-width="3" stroke-linecap="round"/>
   <line x1="312" y1="442" x2="312" y2="460" stroke="url(#sangre)" stroke-width="3" stroke-linecap="round"/>
+  </g>
 
   <!-- Pluma -->
   <g opacity="0.6">
