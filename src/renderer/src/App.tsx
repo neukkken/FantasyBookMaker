@@ -228,66 +228,66 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
 
  <button
  onClick={() => setModo('codice')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'codice'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="codice" size={16} className="mr-1.5" /> Códice
+  <Icono tipo="codice" size={16}  /> Códice
   </button>
  <button
  onClick={() => setModo('manuscrito')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'manuscrito'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="manuscrito" size={16} className="mr-1.5" /> Manuscrito
+  <Icono tipo="manuscrito" size={16}  /> Manuscrito
   </button>
   <button
   onClick={() => setModo('libro')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'libro'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="libro" size={16} className="mr-1.5" /> Libro
+  <Icono tipo="libro" size={16}  /> Libro
   </button>
   <button
   onClick={() => setModo('esquemas')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'esquemas'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="esquemas" size={16} className="mr-1.5" /> Esquemas
+  <Icono tipo="esquemas" size={16}  /> Esquemas
   </button>
   <button
   onClick={() => setModo('linea')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'linea'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="linea" size={16} className="mr-1.5" /> Línea
+  <Icono tipo="linea" size={16}  /> Línea
   </button>
   <button
   onClick={() => setModo('grafico')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'grafico'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="grafico" size={16} className="mr-1.5" /> Grafico
+  <Icono tipo="grafico" size={16}  /> Grafico
   </button>
   <button
   onClick={() => setModo('split')}
-  className={`px-4 py-2 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
+  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
   ${modo === 'split'
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="codice" size={16} className="mr-1.5" /> Split
+  <Icono tipo="codice" size={16}  /> Split
   </button>
  </div>
  )

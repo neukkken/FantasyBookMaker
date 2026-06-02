@@ -39,9 +39,5 @@ const MAPEO = {
 
 export default function Icono({ tipo, size = 14, className = '' }) {
   const Icon = MAPEO[tipo] || MAPEO.circle
-  return Icon ? (
-    <span className="inline-flex items-center justify-center" style={{ width: size, height: size }}>
-      <Icon size={size} className={className} weight="bold" />
-    </span>
-  ) : null
+  return Icon ? <Icon size={size} className={className} weight="bold" /> : null
 }
