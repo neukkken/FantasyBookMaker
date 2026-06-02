@@ -13,11 +13,20 @@ asarUnpack:
   - resources/**
 win:
   executableName: fantasybook-maker
+  # Opcional: firma digital para evitar Windows Defender
+  # certificateFile: ./cert.p12
+  # certificatePassword: ${CERT_PASSWORD}
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
