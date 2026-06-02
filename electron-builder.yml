@@ -9,6 +9,7 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+compress: zlib
 asarUnpack:
   - resources/**
 win:
@@ -26,7 +27,6 @@ nsis:
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
-  compress: zlib
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
