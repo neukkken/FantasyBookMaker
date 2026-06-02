@@ -20,7 +20,7 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   perMachine: false
-  createDesktopShortcut: ask
+  createDesktopShortcut: true
   createStartMenuShortcut: true
   guid: com.fantasybook.maker
   installerIcon: build/icon.ico
