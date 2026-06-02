@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -26,10 +29,7 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Build app
-        run: npm run build
-
-      - name: Package installer
+      - name: Build & package installer
         run: npm run build && npx electron-builder --win --publish=never
 
       - name: Upload to Release
