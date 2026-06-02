@@ -1,6 +1,6 @@
 {
   "name": "fantasybook-maker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "FantasyBook Maker — Desktop worldbuilding and manuscript writing tool",
   "main": "./out/main/index.js",
   "author": "neukkken",
@@ -52,6 +52,9 @@
     "electron-builder": "^24.9.1",
     "electron-vite": "^2.0.0",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "postcss": "^8.5.15",
     "prettier": "^3.2.4",
     "react": "^19.2.7",
