@@ -1,4 +1,5 @@
 const sharp = require('sharp')
+const pngToIco = require('png-to-ico').default
 const fs = require('fs')
 const path = require('path')
 
@@ -6,6 +7,7 @@ const svgPath = path.join(__dirname, '..', 'build', 'icon.svg')
 const pngPath = path.join(__dirname, '..', 'build', 'icon.png')
 const icoPath = path.join(__dirname, '..', 'build', 'icon.ico')
 const icnsPath = path.join(__dirname, '..', 'build', 'icon.icns')
+const resourcesPngPath = path.join(__dirname, '..', 'resources', 'icon.png')
 
 async function main() {
   const svg = fs.readFileSync(svgPath, 'utf-8')
@@ -18,27 +20,36 @@ async function main() {
   fs.writeFileSync(pngPath, png512)
   console.log('✓ icon.png (512x512)')
 
-  // .ico — sharp no genera .ico directamente,
-  // así que usamos el PNG como base para electron-builder.
-  // Para el .ico, copiamos el PNG ya que electron-builder
-  // normalmente lo genera automáticamente desde el PNG.
-  // Pero dejamos también el PNG como fallback.
+  // .ico — usar png-to-ico para generar un .ico válido
   try {
-    fs.writeFileSync(icoPath, png512)
-    console.log('✓ icon.ico (copiado de PNG, electron-builder lo convertirá correctamente)')
+    const icoBuffer = await pngToIco(png512)
+    fs.writeFileSync(icoPath, icoBuffer)
+    console.log('✓ icon.ico (válido, generado con png-to-ico)')
   } catch (e) {
-    console.log('⚠ icon.ico no se pudo copiar:', e.message)
+    console.log('⚠ icon.ico error:', e.message)
   }
 
-  // .icns — igual, electron-builder lo genera desde el PNG
+  // .icns — sharp no genera .icns, electron-builder lo hace desde el PNG
   try {
     fs.writeFileSync(icnsPath, png512)
-    console.log('✓ icon.icns (placeholder para electron-builder)')
+    console.log('✓ icon.icns (placeholder, electron-builder lo convertirá)')
   } catch (e) {
-    console.log('⚠ icon.icns no se pudo copiar:', e.message)
+    console.log('⚠ icon.icns error:', e.message)
   }
 
-  console.log('\nListo. Ejecuta "npm run build" para que electron-builder genere los .ico/.icns correctos.')
+  // resources/icon.png (usado en README)
+  try {
+    const png96 = await sharp(Buffer.from(svg))
+      .resize(96, 96)
+      .png()
+      .toBuffer()
+    fs.writeFileSync(resourcesPngPath, png96)
+    console.log('✓ resources/icon.png (96x96)')
+  } catch (e) {
+    console.log('⚠ resources/icon.png error:', e.message)
+  }
+
+  console.log('\nListo. Todos los iconos generados correctamente.')
 }
 
 main().catch(console.error)
