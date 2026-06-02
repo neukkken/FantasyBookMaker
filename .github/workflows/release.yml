@@ -30,7 +30,7 @@ jobs:
         run: npm run build
 
       - name: Package installer
-        run: npm run build && electron-builder --win --publish=never
+        run: npm run build && npx electron-builder --win --publish=never
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
