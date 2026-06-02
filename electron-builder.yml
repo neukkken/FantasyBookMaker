@@ -17,10 +17,12 @@ nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
   oneClick: false
   allowToChangeInstallationDirectory: true
   perMachine: false
+  createDesktopShortcut: ask
+  createStartMenuShortcut: true
+  guid: com.fantasybook.maker
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
