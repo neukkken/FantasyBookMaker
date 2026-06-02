@@ -79,8 +79,8 @@ function VistaFicha() {
  )
 }
 
-function RegistroForm({ rutaProyecto, onCompletado }) {
- const { crearNuevoElemento } = useCodice()
+function RegistroForm({ onCompletado }) {
+  const { crearNuevoElemento } = useCodice()
  const [nombre, setNombre] = useState('')
  const [tipo, setTipo] = useState('items')
  const inputRef = useRef(null)
@@ -173,12 +173,11 @@ function VistaIndice() {
  titulo=" CÓDICE"
  >
  <div className="w-80 flex flex-col" style={{ maxHeight: 'calc(100vh - 40px)' }}>
- {registrando && (
- <RegistroForm
- rutaProyecto={rutaProyecto}
- onCompletado={() => setRegistrando(false)}
- />
- )}
+  {registrando && (
+  <RegistroForm
+  onCompletado={() => setRegistrando(false)}
+  />
+  )}
 
  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
  {/* Ítems — Artefactos y Hechizos */}

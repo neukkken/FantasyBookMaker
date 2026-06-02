@@ -101,7 +101,7 @@ function CampoEditable({ etiqueta, valor, onChange }) {
 }
 
 function CampoRef({ etiqueta, valor, config, onChange }) {
- const { entidadPorNombre, indexProyecto, navegarA, ETIQUETAS, ICONOS } = useCodice()
+  const { entidadPorNombre, indexProyecto, navegarA, ETIQUETAS } = useCodice()
  const [buscando, setBuscando] = useState(false)
  const [query, setQuery] = useState('')
  const inputRef = useRef(null)
@@ -226,16 +226,14 @@ function CampoRef({ etiqueta, valor, config, onChange }) {
 }
 
 export default function EditorGotico() {
- const {
- elementoSeleccionado,
- contenidoEditor,
- setContenidoEditor,
- guardarElemento,
- eliminarElemento,
- relacionesConfig,
- ICONOS,
- ETIQUETAS
- } = useCodice()
+  const {
+  elementoSeleccionado,
+  contenidoEditor,
+  setContenidoEditor,
+  guardarElemento,
+  eliminarElemento,
+  relacionesConfig
+  } = useCodice()
  const [metadatosLocales, setMetadatosLocales] = useState(null)
  const [confirmarEliminar, setConfirmarEliminar] = useState(false)
  const [tituloEditando, setTituloEditando] = useState(false)
@@ -249,11 +247,11 @@ export default function EditorGotico() {
  } else {
  setMetadatosLocales(null)
  }
- }, [elementoSeleccionado?.ruta])
+  }, [elementoSeleccionado])
 
- useEffect(() => {
- if (tituloEditando && tituloInputRef.current) tituloInputRef.current.focus()
- }, [tituloEditando])
+  useEffect(() => {
+  if (tituloEditando && tituloInputRef.current) tituloInputRef.current.focus()
+  }, [tituloEditando])
 
   const editor = useEditor({
     extensions: [
@@ -280,7 +278,8 @@ export default function EditorGotico() {
     if (editor.getHTML() !== contenidoEditor) {
       editor.commands.setContent(contenidoEditor || '')
     }
-  }, [elementoSeleccionado?.ruta, contenidoEditor])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, elementoSeleccionado?.ruta, contenidoEditor])
 
  const debounceRef = useRef(null)
 
@@ -298,7 +297,7 @@ export default function EditorGotico() {
  useEffect(() => {
  if (!editor) return
  return () => { if (!editor.isDestroyed) guardarCompleto() }
- }, [elementoSeleccionado?.ruta])
+ }, [editor, guardarCompleto, elementoSeleccionado?.ruta])
 
  const actualizarMetadata = (clave, valor) => {
  setMetadatosLocales((prev) => ({ ...prev, [clave]: valor }))
@@ -307,7 +306,7 @@ export default function EditorGotico() {
  if (!elementoSeleccionado || !metadatosLocales) return <EditorVacio />
 
  const catActual = relacionesConfig
- ? Object.entries(relacionesConfig).find(([_, campos]) =>
+  ? Object.entries(relacionesConfig).find(([, campos]) =>
  Object.keys(campos).some((k) => k in metadatosLocales)
  )?.[0]
  : null

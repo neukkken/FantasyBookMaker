@@ -10,7 +10,7 @@ import CampoEditable from './CampoEditable'
 import CampoRef from './CampoRef'
 import Icono from './Icono'
 
-export default function ModalCodice({ elementoSeleccionado, onClose, relacionesConfig }) {
+export default function ModalCodice({ elementoSeleccionado, onClose }) {
   const { rutaProyecto, contenidoEditor, setContenidoEditor, guardarElemento, refrescarIndex, ICONOS, ETIQUETAS, esquema } = useCodice()
   const [metadatosLocales, setMetadatosLocales] = useState(null)
   const [guardando, setGuardando] = useState(false)
@@ -21,7 +21,8 @@ export default function ModalCodice({ elementoSeleccionado, onClose, relacionesC
       setMetadatosLocales({ ...elementoSeleccionado.metadatos })
       setContenidoEditor(elementoSeleccionado.contenido || '')
     }
-  }, [elementoSeleccionado?.ruta])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elementoSeleccionado?.ruta, setContenidoEditor])
 
   const catActual = elementoSeleccionado?.categoria
   const esquemaCategoria = esquema?.[catActual] || {}
@@ -59,7 +60,8 @@ export default function ModalCodice({ elementoSeleccionado, onClose, relacionesC
     if (editor.getHTML() !== contenidoEditor) {
       editor.commands.setContent(contenidoEditor || '')
     }
-  }, [elementoSeleccionado?.ruta])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elementoSeleccionado?.ruta, editor])
 
   const actualizarMetadata = (clave, valor) => {
     setMetadatosLocales((prev) => ({ ...prev, [clave]: valor }))

@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { useCodice } from '../context/CodiceContext'
-import Icono from './Icono'
 
 export default function CampoEditable({ etiqueta, valor, onChange, esNumero: esNumeroProp }) {
-  const { ICONOS, ETIQUETAS } = useCodice()
   const esNumero = esNumeroProp || typeof valor === 'number'
   const esLargo = typeof valor === 'string' && (valor.length > 50 ||
     ['descripcion', 'efecto', 'ingredientes', 'historia', 'habilidades', 'requisitos', 'lore'].includes(etiqueta.replace(/ /g, '_').toLowerCase()))
-  const esRef = typeof valor === 'string' && ['lugar_origen', 'raza', 'clase', 'faccion', 'deidad', 'historia', 'escuela', 'creador', 'dominador', 'gobernante'].includes(etiqueta.replace(/ /g, '_').toLowerCase())
   const [editando, setEditando] = useState(false)
   const [local, setLocal] = useState(String(valor ?? ''))
   const inputRef = useRef(null)

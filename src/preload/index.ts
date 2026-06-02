@@ -64,6 +64,8 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(window as any).electron = electronAPI
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(window as any).api = api
 }

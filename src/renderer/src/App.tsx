@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { CodiceProvider, useCodice } from './context/CodiceContext'
 import ExploradorArchivosGotico from './components/ExploradorArchivosGotico'
 import PanelEscritura from './components/PanelEscritura'
@@ -10,8 +10,8 @@ import PanelSplit from './components/PanelSplit'
 import Icono from './components/Icono'
 import LogoFantasyBook from './components/LogoFantasyBook'
 
-function Toast({ mensaje, tipo, onClose }: { mensaje: string; tipo: 'error' | 'exito'; onClose: () => void }) {
- useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [])
+function Toast({ mensaje, tipo, onClose }: { mensaje: string; tipo: 'error' | 'exito'; onClose: () => void }): React.ReactElement {
+  useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
  return (
  <div className="fixed bottom-4 right-4 z-50 px-4 py-2.5 rounded-sm shadow-gothic-lg text-xs font-serif"
  style={{
@@ -26,7 +26,7 @@ function Toast({ mensaje, tipo, onClose }: { mensaje: string; tipo: 'error' | 'e
  )
 }
 
-function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) => Promise<void>; onEliminar: (ruta: string) => Promise<void> }) {
+function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) => Promise<void>; onEliminar: (ruta: string) => Promise<void> }): React.ReactElement {
  const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
  const [creando, setCreando] = useState(false)
  const [nombre, setNombre] = useState('')
@@ -34,7 +34,7 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  const [toast, setToast] = useState<{ mensaje: string; tipo: 'error' | 'exito' } | null>(null)
  const inputRef = useRef<HTMLInputElement>(null)
 
- const refrescar = () => { window.api.listarProyectos().then(setProyectos) }
+  const refrescar = (): void => { window.api.listarProyectos().then(setProyectos) }
 
  useEffect(() => { refrescar() }, [])
 
@@ -42,14 +42,14 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  if (creando && inputRef.current) inputRef.current.focus()
  }, [creando])
 
- const handleCrear = async () => {
+  const handleCrear = async (): Promise<void> => {
  if (!nombre.trim()) return
  const result = await window.api.crearProyecto(nombre.trim())
  if (!result.exito) { setToast({ mensaje: result.error!, tipo: 'error' }); return }
  await onCargar(result.ruta!)
  }
 
- const handleEliminar = async (ruta: string) => {
+  const handleEliminar = async (ruta: string): Promise<void> => {
  await onEliminar(ruta)
  setEliminando(null)
  refrescar()
@@ -170,7 +170,7 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
 function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProyecto, onNuevoProyecto, onCerrarProyecto }: {
  modo: string; setModo: (m: string) => void; rutaProyecto: string; proyectos: { nombre: string; ruta: string; stats: string }[]
  onCambiarProyecto: (ruta: string) => Promise<void>; onNuevoProyecto: () => Promise<void>; onCerrarProyecto: () => void
-}) {
+}): React.ReactElement {
  const [mostrarSelector, setMostrarSelector] = useState(false)
  const nombreActual = proyectos.find((p) => p.ruta === rutaProyecto)?.nombre || 'Sin proyecto'
 
@@ -233,7 +233,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="codice" size={16} className="inline-block mr-1.5 align-text-bottom" /> Códice
+  <Icono tipo="codice" size={16} className="mr-1.5" /> Códice
   </button>
  <button
  onClick={() => setModo('manuscrito')}
@@ -242,7 +242,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="manuscrito" size={16} className="inline-block mr-1.5 align-text-bottom" /> Manuscrito
+  <Icono tipo="manuscrito" size={16} className="mr-1.5" /> Manuscrito
   </button>
   <button
   onClick={() => setModo('libro')}
@@ -251,7 +251,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="libro" size={16} className="inline-block mr-1.5 align-text-bottom" /> Libro
+  <Icono tipo="libro" size={16} className="mr-1.5" /> Libro
   </button>
   <button
   onClick={() => setModo('esquemas')}
@@ -260,7 +260,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="esquemas" size={16} className="inline-block mr-1.5 align-text-bottom" /> Esquemas
+  <Icono tipo="esquemas" size={16} className="mr-1.5" /> Esquemas
   </button>
   <button
   onClick={() => setModo('linea')}
@@ -269,7 +269,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="linea" size={16} className="inline-block mr-1.5 align-text-bottom" /> Línea
+  <Icono tipo="linea" size={16} className="mr-1.5" /> Línea
   </button>
   <button
   onClick={() => setModo('grafico')}
@@ -278,7 +278,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="grafico" size={16} className="inline-block mr-1.5 align-text-bottom" /> Grafico
+  <Icono tipo="grafico" size={16} className="mr-1.5" /> Grafico
   </button>
   <button
   onClick={() => setModo('split')}
@@ -287,37 +287,37 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
   ? 'border-gothic-gold text-gothic-gold-light'
   : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
   >
-  <Icono tipo="codice" size={16} className="inline-block mr-1.5 align-text-bottom" /> Split
+  <Icono tipo="codice" size={16} className="mr-1.5" /> Split
   </button>
  </div>
  )
 }
 
-function AppContent() {
+function AppContent(): React.ReactElement {
  const [modo, setModo] = useState('codice')
  const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
  const { rutaProyecto, cargarProyecto } = useCodice()
  const [libroKey, setLibroKey] = useState(0)
 
- const refrescarProyectos = () => {
+  const refrescarProyectos = (): void => {
  window.api.listarProyectos().then(setProyectos)
  }
 
  useEffect(() => { refrescarProyectos() }, [])
 
- const handleCargar = async (ruta) => {
+  const handleCargar = async (ruta: string): Promise<void> => {
  setVolverAInicio(0)
  await cargarProyecto(ruta)
  refrescarProyectos()
  setModo('codice')
  }
 
- const setModoConRefresh = (m) => {
+  const setModoConRefresh = (m: string): void => {
  if (m === 'libro') setLibroKey((k) => k + 1)
  setModo(m)
  }
 
- const handleNuevo = async () => {
+  const handleNuevo = async (): Promise<void> => {
  const result = await window.api.crearProyecto('Nuevo Proyecto')
  if (!result.exito) return
  await handleCargar(result.ruta!)
@@ -367,7 +367,7 @@ function AppContent() {
  )
 }
 
-function App() {
+function App(): React.ReactElement {
  useEffect(() => { document.title = 'FantasyBook' }, [])
   return (
     <CodiceProvider>

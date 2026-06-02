@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useCodice } from '../context/CodiceContext'
-import Icono from './Icono'
 
 export default function CampoRef({ etiqueta, valor, config, onChange }) {
-  const { entidadPorNombre, indexProyecto, navegarA, ETIQUETAS, ICONOS } = useCodice()
+  const { entidadPorNombre, indexProyecto, navegarA, ETIQUETAS } = useCodice()
   const [buscando, setBuscando] = useState(false)
   const [query, setQuery] = useState('')
   const inputRef = useRef(null)

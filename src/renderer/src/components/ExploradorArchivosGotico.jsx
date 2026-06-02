@@ -5,7 +5,7 @@ import Icono from './Icono'
 import ModalCodice from './ModalCodice'
 
 function FormularioCrear({ categoria, onCancelar }) {
-  const { crearNuevoElemento, ETIQUETAS, ICONOS } = useCodice()
+  const { crearNuevoElemento } = useCodice()
   const [nombre, setNombre] = useState('')
   const inputRef = useRef(null)
 
@@ -36,8 +36,8 @@ function FormularioCrear({ categoria, onCancelar }) {
 
 export default function ExploradorArchivosGotico({ noPanel }) {
   const {
-    indexProyecto, seleccionarElemento, eliminarElemento, rutaProyecto,
-    CATEGORIAS, ETIQUETAS, ICONOS, relacionesConfig
+    indexProyecto, seleccionarElemento, eliminarElemento,
+    CATEGORIAS, ETIQUETAS
   } = useCodice()
 
   const [creandoEn, setCreandoEn] = useState(null)
@@ -49,10 +49,6 @@ export default function ExploradorArchivosGotico({ noPanel }) {
     await seleccionarElemento(el)
     setModalElemento(el)
     setModalKey((k) => k + 1)
-  }
-
-  const handleCerrarModal = (guardado) => {
-    setModalElemento(null)
   }
 
   const contenido = (
@@ -135,8 +131,7 @@ export default function ExploradorArchivosGotico({ noPanel }) {
         {contenido}
         {modalElemento && (
           <ModalCodice key={modalKey} elementoSeleccionado={modalElemento}
-            relacionesConfig={relacionesConfig}
-            onClose={() => setModalElemento(null)} />
+              onClose={() => setModalElemento(null)} />
         )}
       </>
     )
@@ -147,7 +142,6 @@ export default function ExploradorArchivosGotico({ noPanel }) {
       {contenido}
       {modalElemento && (
         <ModalCodice key={modalKey} elementoSeleccionado={modalElemento}
-          relacionesConfig={relacionesConfig}
           onClose={() => setModalElemento(null)} />
       )}
     </VentanaFlotante>

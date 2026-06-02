@@ -41,16 +41,14 @@ function EventoCard({ evento, onClick }) {
 }
 
 export default function PanelTimeline() {
-  const { indexProyecto, seleccionarElemento, CATEGORIAS, ETIQUETAS, ICONOS, relacionesConfig } = useCodice()
+  const { indexProyecto, seleccionarElemento } = useCodice()
   const [erasExpandidas, setErasExpandidas] = useState({})
   const [modalElemento, setModalElemento] = useState(null)
   const [modalKey, setModalKey] = useState(0)
 
-  const eventos = indexProyecto?.historia || []
-
   const agrupado = useMemo(() => {
     const grupos = {}
-    for (const ev of eventos) {
+    for (const ev of (indexProyecto?.historia || [])) {
       const era = ev.metadatos?.era || 'Sin era'
       if (!grupos[era]) grupos[era] = []
       grupos[era].push(ev)
@@ -66,7 +64,7 @@ export default function PanelTimeline() {
     const ordenEras = { 'Sin era': Infinity }
     entradas.sort((a, b) => (ordenEras[a[0]] ?? 0) - (ordenEras[b[0]] ?? 0))
     return entradas
-  }, [eventos])
+  }, [indexProyecto?.historia])
 
   const handleAbrirModal = async (el) => {
     await seleccionarElemento(el)
@@ -74,7 +72,7 @@ export default function PanelTimeline() {
     setModalKey((k) => k + 1)
   }
 
-  const totalEventos = eventos.length
+  const totalEventos = indexProyecto?.historia?.length || 0
 
   return (
     <VentanaFlotante titulo="LÍNEA DE TIEMPO">
@@ -129,7 +127,6 @@ export default function PanelTimeline() {
       {/* Modal */}
       {modalElemento && (
         <ModalCodice key={modalKey} elementoSeleccionado={modalElemento}
-          relacionesConfig={relacionesConfig}
           onClose={() => setModalElemento(null)} />
       )}
     </VentanaFlotante>

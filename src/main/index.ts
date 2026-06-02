@@ -159,7 +159,7 @@ app.whenReady().then(() => {
   })
 
   // Gestión de proyectos
-  function getProyectosDir() {
+  function getProyectosDir(): string {
     return join(app.getPath('documents'), 'FantasyBook')
   }
 

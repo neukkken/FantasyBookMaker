@@ -39,7 +39,7 @@ function obtenerRelacionesEntidad(metadatos, categoria, relacionesConfig) {
 }
 
 export default function PanelGrafico() {
-  const { indexProyecto, CATEGORIAS, ETIQUETAS, ICONOS, relacionesConfig, seleccionarElemento, entidadPorNombre } = useCodice()
+  const { indexProyecto, CATEGORIAS, ETIQUETAS, relacionesConfig, seleccionarElemento, entidadPorNombre } = useCodice()
   const svgRef = useRef(null)
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
@@ -67,8 +67,7 @@ export default function PanelGrafico() {
       }
     }
     return mapa
-  }, [indexProyecto])
-
+  }, [CATEGORIAS, indexProyecto])
   useEffect(() => {
     const actualizarDim = () => {
       if (svgRef.current) {
@@ -129,7 +128,7 @@ export default function PanelGrafico() {
       simRef.current = sim
       return () => { sim.stop(); simRef.current = null }
     }
-  }, [indexProyecto, categoriasActivas, dim])
+  }, [CATEGORIAS, indexProyecto, categoriasActivas, dim, entidadPorNombre, relacionesConfig])
 
   const handleWheel = useCallback((e) => {
     e.preventDefault()
@@ -299,7 +298,7 @@ export default function PanelGrafico() {
                         fill={esHover ? `${color}30` : `${color}15`}
                         stroke={esHover ? color : `${color}50`}
                         strokeWidth={esHover ? 2 : 1.5}
-                        transition="all 0.15s" />
+                        style={{ transition: 'all 0.15s' }} />
                       <circle r={TAM_NODO - 8}
                         fill={`${color}40`}
                         stroke="none" />
@@ -325,7 +324,6 @@ export default function PanelGrafico() {
 
       {modalElemento && (
         <ModalCodice key={modalKey} elementoSeleccionado={modalElemento}
-          relacionesConfig={relacionesConfig}
           onClose={() => setModalElemento(null)} />
       )}
     </VentanaFlotante>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 
 const CATEGORIAS_FALLBACK = [
   'personajes', 'lugares', 'magia', 'criaturas',
@@ -19,13 +19,6 @@ const ICONOS_FALLBACK = {
 }
 
 const CodiceContext = createContext(null)
-
-const indexVacio = (categorias) => {
-  const cats = categorias || CATEGORIAS_FALLBACK
-  const obj = {}
-  cats.forEach((c) => { obj[c] = [] })
-  return obj
-}
 
 export function CodiceProvider({ children }) {
   const [indexProyecto, setIndexProyecto] = useState({})

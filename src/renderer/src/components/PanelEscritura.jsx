@@ -21,7 +21,7 @@ function crearPluginCodice() {
     key: NOMBRES_PLUGIN_KEY,
     state: {
       init() { return DecorationSet.empty },
-      apply(tr, set) {
+      apply(tr) {
         const nombres = Object.keys(_entidadesPlanasGlobal)
         if (!nombres.length || !tr.doc) return DecorationSet.empty
         const decorations = []
@@ -255,7 +255,7 @@ export default function PanelEscritura({ noPanel }) {
   const {
     rutaProyecto: rutaProyecto,
     indexProyecto, ETIQUETAS, ICONOS, CATEGORIAS,
-    navegarA, entidadPorNombre, notificarGuardado, ultimoGuardado
+    notificarGuardado, ultimoGuardado
   } = useCodice()
 
   const [capitulos, setCapitulos] = useState([])
@@ -264,7 +264,6 @@ export default function PanelEscritura({ noPanel }) {
   const [tituloLocal, setTituloLocal] = useState('')
   const [tituloEditando, setTituloEditando] = useState(false)
   const [contenidoAlGuardar, setContenidoAlGuardar] = useState('')
-  const [tooltip, setTooltip] = useState(null)
   const [infoPanel, setInfoPanel] = useState(null)
   const [mostrarBuscador, setMostrarBuscador] = useState(false)
   const [posArroba, setPosArroba] = useState(null)
@@ -321,8 +320,7 @@ export default function PanelEscritura({ noPanel }) {
     }
     _entidadesPlanasGlobal = mapa
     return mapa
-  }, [indexProyecto])
-
+  }, [CATEGORIAS, indexProyecto])
   const resultadosFiltrados = useMemo(() => {
     return Object.values(entidadesPlanas).filter(e => {
       if (!busquedaTexto) return true
@@ -344,8 +342,7 @@ export default function PanelEscritura({ noPanel }) {
       setMostrarBuscador(false)
       setBusquedaTexto('')
     } : null
-  }, [mostrarBuscador, indiceSel, resultadosFiltrados])
-
+  }, [mostrarBuscador, indiceSel, resultadosFiltrados, insertarReferencia])
   useEffect(() => {
     if (mostrarBuscador && inputBusquedaRef.current) {
       inputBusquedaRef.current.focus()
@@ -373,10 +370,11 @@ export default function PanelEscritura({ noPanel }) {
     try {
       const r = await window.api.manuscrito.listarCapitulos(rutaProyecto)
       setCapitulos(r || [])
-    } catch (_) { setCapitulos([]) }
+    } catch { setCapitulos([]) }
   }, [rutaProyecto])
 
-  useEffect(() => { refrescarCapitulos() }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { refrescarCapitulos() }, [refrescarCapitulos])
 
   const handleSeleccionarCapitulo = useCallback(async (cap) => {
     try {
@@ -386,14 +384,14 @@ export default function PanelEscritura({ noPanel }) {
       setContenidoAlGuardar(completo.contenido)
       setTituloLocal(completo.metadatos.titulo || '')
       setTituloEditando(false)
-    } catch (_) {}
+    } catch { /* ignore */ }
   }, [rutaProyecto])
 
   const handleCrearCapitulo = useCallback(async (titulo) => {
     try {
       const r = await window.api.manuscrito.crearCapitulo(rutaProyecto, titulo)
       if (r.exito) await refrescarCapitulos()
-    } catch (_) {}
+    } catch { /* ignore */ }
   }, [rutaProyecto, refrescarCapitulos])
 
   const handleEliminarCapitulo = useCallback(async (ruta) => {
@@ -404,7 +402,7 @@ export default function PanelEscritura({ noPanel }) {
         setContenidoEditor('')
       }
       await refrescarCapitulos()
-    } catch (_) {}
+    } catch { /* ignore */ }
   }, [rutaProyecto, capituloActivo, refrescarCapitulos])
 
   const editor = useEditor({
@@ -448,8 +446,7 @@ export default function PanelEscritura({ noPanel }) {
     if (editor.getHTML() !== contenidoEditor) {
       editor.commands.setContent(contenidoEditor || '')
     }
-  }, [capituloActivo?.ruta])
-
+  }, [capituloActivo, editor, contenidoEditor])
   const insertarReferencia = useCallback((ent) => {
     const nombre = ent.metadatos?.nombre || ent.archivo
     if (posArroba !== null && editor) {
@@ -484,7 +481,7 @@ export default function PanelEscritura({ noPanel }) {
       setContenidoAlGuardar(contenidoEditor)
       notificarGuardado()
       await refrescarCapitulos()
-    } catch (_) {}
+    } catch { /* ignore */ }
   }, [rutaProyecto, capituloActivo, contenidoEditor, tituloLocal, contenidoAlGuardar, palabrasHoy, refrescarCapitulos, notificarGuardado])
 
   const insertarImagen = useCallback(() => {
@@ -743,7 +740,7 @@ export default function PanelEscritura({ noPanel }) {
               {/* Panel de información al clickear referencia */}
               {infoPanel && (() => {
                 const e = infoPanel.entidad
-                const desc = (e.contenido || '').replace(/[#*\[\]]/g, '').trim().slice(0, 300)
+                const desc = (e.contenido || '').replace(/[#*[\]]/g, '').trim().slice(0, 300)
                 const stats = Object.entries(e.metadatos || {}).filter(
                   ([k, v]) => !['id', 'nombre', 'descripcion'].includes(k) && !Array.isArray(v) && typeof v !== 'object'
                 ).slice(0, 8)

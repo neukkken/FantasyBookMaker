@@ -76,7 +76,7 @@ function Pagina({ contenido, titulo, numPagina, totalPaginas, className = '', en
 }
 
 export default function VistaLibro() {
-  const { indexProyecto, ETIQUETAS, ICONOS, CATEGORIAS, navegarA, entidadPorNombre, rutaProyecto } = useCodice()
+  const { indexProyecto, ETIQUETAS, ICONOS, CATEGORIAS, rutaProyecto } = useCodice()
   const [capitulos, setCapitulos] = useState([])
   const [paginaActual, setPaginaActual] = useState(0)
   const [contenidos, setContenidos] = useState({})
@@ -100,13 +100,13 @@ export default function VistaLibro() {
   const maxChars = Math.round(1200 * 11 / tamanioFuente)
 
   useEffect(() => {
-    try { localStorage.setItem('fb-font-size', String(tamanioFuente)) } catch {}
+    try { localStorage.setItem('fb-font-size', String(tamanioFuente)) } catch { /* ignore */ }
   }, [tamanioFuente])
   useEffect(() => {
-    try { localStorage.setItem('fb-modo-simple', String(modoSimple)) } catch {}
+    try { localStorage.setItem('fb-modo-simple', String(modoSimple)) } catch { /* ignore */ }
   }, [modoSimple])
   useEffect(() => {
-    try { localStorage.setItem('fb-pantalla-completa', String(pantallaCompleta)) } catch {}
+    try { localStorage.setItem('fb-pantalla-completa', String(pantallaCompleta)) } catch { /* ignore */ }
   }, [pantallaCompleta])
 
   const entidadesPlanas = useMemo(() => {
@@ -118,8 +118,7 @@ export default function VistaLibro() {
       }
     }
     return mapa
-  }, [indexProyecto])
-
+  }, [CATEGORIAS, indexProyecto])
   const paginasVirtuales = useMemo(() => {
     const paginas = []
     for (let i = 0; i < capitulos.length; i++) {
@@ -195,15 +194,14 @@ export default function VistaLibro() {
   const refrescar = useCallback(async () => {
     const resultado = await window.api.manuscrito.listarCapitulos(rutaProyecto)
     setCapitulos(resultado)
-  }, [])
+  }, [rutaProyecto])
 
   useEffect(() => {
     refrescar()
     const onFocus = () => refrescar()
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
-  }, [])
-
+  }, [refrescar])
   useEffect(() => {
     const handler = () => setTooltip(null)
     document.addEventListener('scroll', handler, true)
@@ -261,8 +259,7 @@ export default function VistaLibro() {
         setContenidos((prev) => ({ ...prev, [i]: completo.contenido || '' }))
       }
     })
-  }, [paginasVirtuales, paginaActual])
-
+  }, [paginasVirtuales, paginaActual, capitulos, contenidos, rutaProyecto])
   const irA = (idx) => {
     const max = paginasVirtuales.length - 1
     if (idx < 0 || idx > max || flipando) return
