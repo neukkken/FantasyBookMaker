@@ -26,6 +26,7 @@ nsis:
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
+  compress: zlib
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
