@@ -1,0 +1,146 @@
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1e"/>
+      <stop offset="100%" stop-color="#121214"/>
+    </linearGradient>
+    <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0c060"/>
+      <stop offset="50%" stop-color="#c9a84c"/>
+      <stop offset="100%" stop-color="#a08030"/>
+    </linearGradient>
+    <linearGradient id="oro-claro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0e0a0"/>
+      <stop offset="100%" stop-color="#d4b060"/>
+    </linearGradient>
+    <linearGradient id="pagina" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5eed6"/>
+      <stop offset="100%" stop-color="#e0d5b8"/>
+    </linearGradient>
+    <linearGradient id="sangre" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c41010"/>
+      <stop offset="100%" stop-color="#880808"/>
+    </linearGradient>
+    <linearGradient id="brillo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="sombra">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#c9a84c" flood-opacity="0.25"/>
+    </filter>
+    <filter id="sombra-int">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo oscuro redondeado -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)" stroke="url(#oro)" stroke-width="2"/>
+
+  <!-- Brillo superior -->
+  <rect x="16" y="16" width="480" height="240" rx="96" fill="url(#brillo)"/>
+
+  <!-- Arco gótico -->
+  <path d="M120 440V180c0-40 28-72 68-72h136c40 0 68 32 68 72v260"
+        stroke="url(#oro)" stroke-width="3" fill="none" opacity="0.3"/>
+
+  <!-- Esquinas metálicas -->
+  <path d="M96 88l-24-24" stroke="url(#oro)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <path d="M416 88l24-24" stroke="url(#oro)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <path d="M96 424l-24 24" stroke="url(#oro)" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  <path d="M416 424l24 24" stroke="url(#oro)" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Círculos en esquinas -->
+  <circle cx="72" cy="64" r="10" fill="url(#oro)" opacity="0.25"/>
+  <circle cx="440" cy="64" r="10" fill="url(#oro)" opacity="0.25"/>
+  <circle cx="72" cy="448" r="10" fill="url(#oro)" opacity="0.2"/>
+  <circle cx="440" cy="448" r="10" fill="url(#oro)" opacity="0.2"/>
+
+  <!-- Libro - portada izquierda -->
+  <path d="M148 440V160c0-20 14-36 38-36h90c24 0 38 16 38 36v280"
+        fill="url(#pagina)" stroke="url(#oro)" stroke-width="3" filter="url(#sombra)"/>
+  <!-- Libro - portada derecha -->
+  <path d="M314 440V160c0-20 14-36 38-36h90c24 0 38 16 38 36v280"
+        fill="url(#pagina)" stroke="url(#oro)" stroke-width="3" filter="url(#sombra)"/>
+
+  <!-- Sombra del lomo -->
+  <rect x="292" y="124" width="28" height="316" fill="#a08030" opacity="0.15"/>
+
+  <!-- Lomo central -->
+  <line x1="300" y1="126" x2="300" y2="440" stroke="#a08030" stroke-width="3"/>
+  <line x1="306" y1="128" x2="306" y2="440" stroke="#a08030" stroke-width="1" opacity="0.4"/>
+
+  <!-- Costuras del lomo -->
+  <circle cx="303" cy="150" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="195" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="240" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="285" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="330" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="375" r="4" fill="#a08030" opacity="0.5"/>
+  <circle cx="303" cy="420" r="4" fill="#a08030" opacity="0.5"/>
+
+  <!-- Pliegue página izquierda -->
+  <path d="M148 180c20 10 60 10 90 0" stroke="#c0b090" stroke-width="1" opacity="0.4" fill="none"/>
+  <path d="M148 240c20 10 60 10 90 0" stroke="#c0b090" stroke-width="1" opacity="0.3" fill="none"/>
+
+  <!-- Pliegue página derecha -->
+  <path d="M462 180c-20 10-60 10-90 0" stroke="#c0b090" stroke-width="1" opacity="0.4" fill="none"/>
+  <path d="M462 240c-20 10-60 10-90 0" stroke="#c0b090" stroke-width="1" opacity="0.3" fill="none"/>
+
+  <!-- Líneas de texto - página izquierda -->
+  <rect x="168" y="170" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="188" width="60" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="206" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="224" width="80" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="168" y="242" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="260" width="50" height="3" rx="1.5" fill="#8a7337" opacity="0.15"/>
+  <rect x="168" y="278" width="90" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="296" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="168" y="314" width="70" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="168" y="332" width="95" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="168" y="350" width="55" height="3" rx="1.5" fill="#8a7337" opacity="0.15"/>
+  <rect x="168" y="368" width="85" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+
+  <!-- Líneas de texto - página derecha -->
+  <rect x="330" y="170" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="188" width="70" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="206" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="224" width="85" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="330" y="242" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="260" width="40" height="3" rx="1.5" fill="#8a7337" opacity="0.15"/>
+  <rect x="330" y="278" width="95" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="296" width="100" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="330" y="314" width="60" height="3" rx="1.5" fill="#8a7337" opacity="0.25"/>
+  <rect x="330" y="332" width="80" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+  <rect x="330" y="350" width="45" height="3" rx="1.5" fill="#8a7337" opacity="0.15"/>
+  <rect x="330" y="368" width="75" height="3" rx="1.5" fill="#8a7337" opacity="0.2"/>
+
+  <!-- Letra capital F -->
+  <text x="170" y="170" font-family="'Playfair Display', Georgia, serif" font-size="24"
+        fill="url(#sangre)" font-weight="bold" font-style="italic" opacity="0.4">F</text>
+
+  <!-- Cinta marcadora -->
+  <path d="M288 442v-40c0-12 12-22 24-22s24 10 24 22v40" fill="url(#sangre)"/>
+  <path d="M288 400c0-12 12-22 24-22s24 10 24 22" fill="url(#sangre)" stroke="#660000" stroke-width="1.5"/>
+  <line x1="300" y1="442" x2="300" y2="460" stroke="url(#sangre)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="312" y1="442" x2="312" y2="460" stroke="url(#sangre)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Pluma -->
+  <g opacity="0.6">
+    <path d="M470 60c-20 30-50 80-60 130s-10 60-10 60"
+          stroke="url(#oro)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M400 240c0 0 10-10 30-10s30 10 30-10"
+          stroke="url(#oro)" stroke-width="2.5" fill="none"/>
+    <path d="M470 60l18-28c4-6 12-8 16-4s4 12-4 16l-30 16"
+          fill="url(#oro-claro)" opacity="0.7"/>
+  </g>
+
+  <!-- Iniciales FB -->
+  <text x="178" y="430" font-family="'Playfair Display', Georgia, serif" font-size="28"
+        fill="url(#oro)" font-weight="bold" font-style="italic" opacity="0.6">FB</text>
+
+  <!-- Líneas decorativas inferiores -->
+  <line x1="160" y1="442" x2="240" y2="442" stroke="url(#oro)" stroke-width="1" opacity="0.2"/>
+  <circle cx="200" cy="442" r="2" fill="url(#oro)" opacity="0.3"/>
+  <line x1="360" y1="442" x2="440" y2="442" stroke="url(#oro)" stroke-width="1" opacity="0.2"/>
+  <circle cx="400" cy="442" r="2" fill="url(#oro)" opacity="0.3"/>
+</svg>

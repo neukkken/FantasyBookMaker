@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: Merriweather, Georgia, Garamond, serif;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  input, textarea, [contenteditable] {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  .tiptap {
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+  }
+
+  #app {
+    height: 100vh;
+    width: 100vw;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0b;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #5a4a2e;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7a6a3e;
+  }
+}
+
+@layer components {
+  .titlebar-gotico {
+    @apply bg-gradient-to-r from-[#1a1410] via-[#2a2018] to-[#1a1410]
+           border-b border-gothic-gold/30
+           flex items-center justify-center relative h-9 shrink-0
+           cursor-grab active:cursor-grabbing;
+  }
+
+  .btn-cerrar {
+    @apply absolute right-2 top-1/2 -translate-y-1/2
+           w-5 h-5 flex items-center justify-center
+           text-gothic-parchment/40 hover:text-gothic-blood-light
+           text-xs leading-none transition-colors duration-200;
+  }
+
+  .panel-gotico {
+    @apply bg-gothic-surface/95 backdrop-blur-sm
+           border-2 border-double border-gothic-gold/40
+           shadow-gothic flex flex-col;
+  }
+
+  .item-lista-gotico {
+    @apply w-full text-left px-4 py-2.5 rounded-sm
+           border border-transparent
+           text-gothic-parchment/70 hover:text-gothic-parchment
+           hover:border-gothic-gold/20 hover:bg-gothic-gold/5
+           transition-all duration-150;
+  }
+
+  .item-lista-gotico-activo {
+    @apply item-lista-gotico
+           border-gothic-gold/30 bg-gothic-gold/10 text-gothic-gold-light;
+  }
+
+  .etiqueta-tipo {
+    @apply inline-block px-3 py-0.5 rounded-sm
+           text-[10px] font-serif tracking-wider uppercase
+           border border-gothic-gold/30 text-gothic-gold-light/80
+           bg-gothic-gold/10;
+  }
+
+  .fondo-escritorio {
+    @apply bg-gothic-bg bg-gothic-texture;
+  }
+}
