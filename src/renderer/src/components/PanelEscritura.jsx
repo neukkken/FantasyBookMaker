@@ -272,11 +272,14 @@ export default function PanelEscritura({ noPanel }) {
   const [palabrasHoy, setPalabrasHoy] = useState(0)
   const [metaDiaria, setMetaDiaria] = useState(0)
   const [editandoMeta, setEditandoMeta] = useState(false)
+  const [, setTick] = useState(0)
+  const [toast, setToast] = useState(null)
   const tituloInputRef = useRef(null)
   const editorContainerRef = useRef(null)
   const busquedaRef = useRef(null)
   const inputBusquedaRef = useRef(null)
   const mostrarBuscadorRef = useRef(false)
+  const autoSaveRef = useRef(null)
 
   useEffect(() => {
     mostrarBuscadorRef.current = mostrarBuscador
@@ -459,7 +462,7 @@ export default function PanelEscritura({ noPanel }) {
       setMostrarBuscador(false)
       setBusquedaTexto('')
     } : null
-  }, [mostrarBuscador, indiceSel, resultadosFiltrados])
+  }, [mostrarBuscador, indiceSel, resultadosFiltrados, insertarReferencia])
 
   const guardar = useCallback(async () => {
     if (!capituloActivo) return
@@ -482,6 +485,8 @@ export default function PanelEscritura({ noPanel }) {
       setContenidoAlGuardar(contenidoEditor)
       notificarGuardado()
       await refrescarCapitulos()
+      setToast({ mensaje: 'Guardado', tipo: 'exito' })
+      setTimeout(() => setToast(null), 2000)
     } catch { /* ignore */ }
   }, [rutaProyecto, capituloActivo, contenidoEditor, tituloLocal, contenidoAlGuardar, palabrasHoy, refrescarCapitulos, notificarGuardado])
 
@@ -508,11 +513,21 @@ export default function PanelEscritura({ noPanel }) {
   const segs = ultimoGuardado ? Math.floor((Date.now() - ultimoGuardado) / 1000) : null
 
   useEffect(() => {
-    const interval = setInterval(() => {}, 10000)
-    return () => clearInterval(interval)
-  }, [])
+    if (!sinGuardar || !capituloActivo) return
+    if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
+    autoSaveRef.current = setTimeout(() => {
+      guardar()
+    }, 3000)
+    return () => {
+      if (autoSaveRef.current) clearTimeout(autoSaveRef.current)
+    }
+  }, [contenidoEditor, capituloActivo, guardar, sinGuardar])
 
-  useEffect(() => {}, [ultimoGuardado])
+  useEffect(() => {
+    if (!ultimoGuardado) return
+    const interval = setInterval(() => setTick(n => n + 1), 1000)
+    return () => clearInterval(interval)
+  }, [ultimoGuardado])
 
   useEffect(() => {
     const handler = (e) => {
@@ -835,6 +850,18 @@ export default function PanelEscritura({ noPanel }) {
           </>
         )}
       </div>
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 px-4 py-2.5 rounded-sm shadow-gothic-lg text-xs font-serif"
+          style={{
+            background: '#1a2a0a',
+            border: '1px solid rgba(201,168,76,0.4)',
+            color: '#e6dfc8',
+            animation: 'slideUp 0.3s ease-out'
+          }}>
+          ✓ {toast.mensaje}
+          <style>{`@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+        </div>
+      )}
     </div>
   )
 
