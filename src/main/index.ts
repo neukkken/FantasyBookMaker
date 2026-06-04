@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, MenuItem, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -35,8 +35,37 @@ function createWindow(): void {
     icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      spellcheck: true
     }
+  })
+
+  session.defaultSession.setSpellCheckerLanguages(['es', 'en-US'])
+
+  mainWindow.webContents.on('context-menu', (_event, params) => {
+    const menu = new Menu()
+    if (params.misspelledWord) {
+      for (const suggestion of params.dictionarySuggestions) {
+        menu.append(new MenuItem({
+          label: suggestion,
+          click: () => mainWindow.webContents.replaceMisspelling(suggestion)
+        }))
+      }
+      if (menu.items.length > 0) {
+        menu.append(new MenuItem({ type: 'separator' }))
+      }
+    }
+    if (params.selectionText) {
+      menu.append(new MenuItem({
+        label: '🔗 Vincular al código',
+        click: () => mainWindow.webContents.send('vincular-texto', params.selectionText)
+      }))
+      menu.append(new MenuItem({ type: 'separator' }))
+    }
+    menu.append(new MenuItem({ label: 'Cortar', role: 'cut' }))
+    menu.append(new MenuItem({ label: 'Copiar', role: 'copy' }))
+    menu.append(new MenuItem({ label: 'Pegar', role: 'paste' }))
+    menu.popup()
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -156,6 +185,15 @@ app.whenReady().then(() => {
     } catch (err) {
       return { exito: false, error: (err as Error).message }
     }
+  })
+
+  // IPC para cambiar idioma del corrector ortográfico
+  ipcMain.on('establecer-idioma', (_event, idioma: string) => {
+    const langs: Record<string, string[]> = {
+      es: ['es', 'en-US'],
+      en: ['en-US', 'es']
+    }
+    session.defaultSession.setSpellCheckerLanguages(langs[idioma] || ['es', 'en-US'])
   })
 
   // Gestión de proyectos

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CodiceProvider, useCodice } from './context/CodiceContext'
 import ExploradorArchivosGotico from './components/ExploradorArchivosGotico'
 import PanelEscritura from './components/PanelEscritura'
@@ -9,6 +10,8 @@ import PanelGrafico from './components/PanelGrafico'
 import PanelSplit from './components/PanelSplit'
 import Icono from './components/Icono'
 import LogoFantasyBook from './components/LogoFantasyBook'
+import SettingsModal from './components/SettingsModal'
+import Tooltip from './components/Tooltip'
 
 function Toast({ mensaje, tipo, onClose }: { mensaje: string; tipo: 'error' | 'exito'; onClose: () => void }): React.ReactElement {
   useEffect(() => { const t = setTimeout(onClose, 4000); return () => clearTimeout(t) }, [onClose])
@@ -27,7 +30,8 @@ function Toast({ mensaje, tipo, onClose }: { mensaje: string; tipo: 'error' | 'e
 }
 
 function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) => Promise<void>; onEliminar: (ruta: string) => Promise<void> }): React.ReactElement {
- const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
+  const { t } = useTranslation()
+  const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
  const [creando, setCreando] = useState(false)
  const [nombre, setNombre] = useState('')
  const [eliminando, setEliminando] = useState<string | null>(null)
@@ -58,25 +62,25 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  return (
  <div className="flex items-center justify-center h-full">
  <div className="text-center max-w-md w-full px-8">
- <h1 className="text-2xl font-titulo italic font-bold text-gothic-gold-light mb-2">
- FantasyBook
- </h1>
- <p className="text-sm text-gothic-parchment/50 font-lectura mb-8">
- Selecciona o crea un proyecto
- </p>
+  <h1 className="text-2xl font-titulo italic font-bold text-gothic-gold-light mb-2">
+  FantasyBook
+  </h1>
+  <p className="text-sm text-gothic-parchment/50 font-lectura mb-8">
+  {t('proyectos.seleccionar')}
+  </p>
 
- {/* Lista de proyectos */}
- <div className="space-y-1.5 mb-6">
- {proyectos.length === 0 && !creando && (
- <p className="text-xs text-gothic-parchment/30 italic font-lectura py-4">
- No hay proyectos aún. Crea uno nuevo.
- </p>
+  {/* Lista de proyectos */}
+  <div className="space-y-1.5 mb-6">
+  {proyectos.length === 0 && !creando && (
+  <p className="text-xs text-gothic-parchment/30 italic font-lectura py-4">
+  {t('proyectos.sinProyectos')}
+  </p>
  )}
  {proyectos.map((p) => (
  <div key={p.ruta} className="group relative">
  {eliminando === p.ruta ? (
  <div className="flex items-center gap-2 px-4 py-3 rounded-sm border border-gothic-blood/40 bg-gothic-blood/5">
- <span className="text-xs text-gothic-blood font-serif">¿Eliminar "{p.nombre}"?</span>
+  <span className="text-xs text-gothic-blood font-serif">{t('proyectos.confirmarEliminar', { nombre: p.nombre })}</span>
  <button onClick={() => handleEliminar(p.ruta)}
  className="px-2 py-1 rounded-sm text-xs uppercase bg-gothic-blood/20 text-gothic-parchment hover:bg-gothic-blood/40 font-serif">Sí</button>
  <button onClick={() => setEliminando(null)}
@@ -102,7 +106,7 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center
  justify-center rounded-sm text-gothic-parchment/30 hover:text-gothic-blood-light
  hover:bg-gothic-gold/5 transition-all text-xs"
- title="Eliminar proyecto"
+  title={t('proyectos.eliminar')}
  >
  ✕
  </button>
@@ -121,31 +125,31 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  value={nombre}
  onChange={(e) => setNombre(e.target.value)}
  onKeyDown={(e) => { if (e.key === 'Enter') handleCrear(); if (e.key === 'Escape') { setCreando(false); setNombre('') } }}
- placeholder="Nombre del proyecto..."
- className="w-full px-3 py-2 rounded-sm text-sm bg-gothic-surface
- border border-gothic-gold/40 text-gothic-parchment
- placeholder:text-gothic-gold/30 outline-none
- focus:border-gothic-gold/70 font-serif"
- />
- <div className="flex gap-2">
- <button
- onClick={handleCrear}
- disabled={!nombre.trim()}
- className="flex-1 py-2 rounded-sm text-xs tracking-wider uppercase font-serif
- border border-gothic-gold/40 text-gothic-gold-light
- bg-gothic-gold/10 hover:bg-gothic-gold/20
- disabled:opacity-40 disabled:cursor-not-allowed transition-all"
- >
- Crear Proyecto
- </button>
- <button
- onClick={() => { setCreando(false); setNombre('') }}
- className="px-3 py-2 rounded-sm text-xs tracking-wider uppercase font-serif
- border border-gothic-blood/40 text-gothic-parchment/50
- hover:text-gothic-parchment transition-all"
- >
- Cancelar
- </button>
+  placeholder={t('proyectos.nombre')}
+  className="w-full px-3 py-2 rounded-sm text-sm bg-gothic-surface
+  border border-gothic-gold/40 text-gothic-parchment
+  placeholder:text-gothic-gold/30 outline-none
+  focus:border-gothic-gold/70 font-serif"
+  />
+  <div className="flex gap-2">
+  <button
+  onClick={handleCrear}
+  disabled={!nombre.trim()}
+  className="flex-1 py-2 rounded-sm text-xs tracking-wider uppercase font-serif
+  border border-gothic-gold/40 text-gothic-gold-light
+  bg-gothic-gold/10 hover:bg-gothic-gold/20
+  disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+  >
+  {t('proyectos.crear')}
+  </button>
+  <button
+  onClick={() => { setCreando(false); setNombre('') }}
+  className="px-3 py-2 rounded-sm text-xs tracking-wider uppercase font-serif
+  border border-gothic-blood/40 text-gothic-parchment/50
+  hover:text-gothic-parchment transition-all"
+  >
+  {t('proyectos.cancelar')}
+  </button>
  </div>
  </div>
  ) : (
@@ -157,9 +161,9 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  hover:from-gothic-gold/20 hover:via-gothic-gold/25 hover:to-gothic-gold/20
  hover:border-gothic-gold/70 transition-all duration-200"
  >
- + Nuevo Proyecto
- </button>
- )}
+  + {t('proyectos.crearNuevo')}
+  </button>
+  )}
  </div>
 
  {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onClose={() => setToast(null)} />}
@@ -167,12 +171,13 @@ function ProyectosScreen({ onCargar, onEliminar }: { onCargar: (ruta: string) =>
  )
 }
 
-function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProyecto, onNuevoProyecto, onCerrarProyecto }: {
- modo: string; setModo: (m: string) => void; rutaProyecto: string; proyectos: { nombre: string; ruta: string; stats: string }[]
- onCambiarProyecto: (ruta: string) => Promise<void>; onNuevoProyecto: () => Promise<void>; onCerrarProyecto: () => void
+function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProyecto, onNuevoProyecto, onCerrarProyecto, onAbrirAjustes }: {
+  modo: string; setModo: (m: string) => void; rutaProyecto: string; proyectos: { nombre: string; ruta: string; stats: string }[]
+  onCambiarProyecto: (ruta: string) => Promise<void>; onNuevoProyecto: () => Promise<void>; onCerrarProyecto: () => void; onAbrirAjustes: () => void
 }): React.ReactElement {
- const [mostrarSelector, setMostrarSelector] = useState(false)
- const nombreActual = proyectos.find((p) => p.ruta === rutaProyecto)?.nombre || 'Sin proyecto'
+  const { t } = useTranslation()
+  const [mostrarSelector, setMostrarSelector] = useState(false)
+  const nombreActual = proyectos.find((p) => p.ruta === rutaProyecto)?.nombre || t('proyectos.vacio')
 
   return (
   <div className="flex items-center gap-0 px-4 py-0 border-b border-gothic-gold/20 bg-gothic-bg/80 relative"
@@ -212,7 +217,7 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
  className="w-full text-left px-3 py-2 text-xs font-serif text-gothic-gold/50
  hover:text-gothic-gold-light hover:bg-gothic-gold/5 transition-colors"
  >
- + Nuevo Proyecto
+  + {t('proyectos.crearNuevo')}
  </button>
  <button
  onClick={() => { setMostrarSelector(false); onCerrarProyecto() }}
@@ -222,81 +227,87 @@ function BarraNavegacion({ modo, setModo, rutaProyecto, proyectos, onCambiarProy
  ✕ Cerrar proyecto
  </button>
  </div>
- </div>
- )}
- </div>
-
- <button
- onClick={() => setModo('codice')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'codice'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="codice" size={16}  /> Códice
+  </div>
+  )}
+  </div>
+  <button onClick={onAbrirAjustes}
+    className="px-2 py-2 text-xs text-gothic-gold/30 hover:text-gothic-gold/60 transition-colors"
+    title={t('settings.titulo')}>
+    ⚙
   </button>
- <button
- onClick={() => setModo('manuscrito')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'manuscrito'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="manuscrito" size={16}  /> Manuscrito
-  </button>
-  <button
-  onClick={() => setModo('libro')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'libro'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="libro" size={16}  /> Libro
-  </button>
-  <button
-  onClick={() => setModo('esquemas')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'esquemas'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="esquemas" size={16}  /> Esquemas
-  </button>
-  <button
-  onClick={() => setModo('linea')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'linea'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="linea" size={16}  /> Línea
-  </button>
-  <button
-  onClick={() => setModo('grafico')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'grafico'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="grafico" size={16}  /> Grafico
-  </button>
-  <button
-  onClick={() => setModo('split')}
-  className={`px-4 py-2 inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-serif border-b-2 transition-colors
-  ${modo === 'split'
-  ? 'border-gothic-gold text-gothic-gold-light'
-  : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}
-  >
-  <Icono tipo="codice" size={16}  /> Split
-  </button>
+  <div className="flex-1" />
+  <Tooltip texto={t('nav.codice')}>
+    <button onClick={() => setModo('codice')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'codice'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="codice" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.manuscrito')}>
+    <button onClick={() => setModo('manuscrito')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'manuscrito'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="manuscrito" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.libro')}>
+    <button onClick={() => setModo('libro')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'libro'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="libro" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.esquemas')}>
+    <button onClick={() => setModo('esquemas')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'esquemas'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="esquemas" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.linea')}>
+    <button onClick={() => setModo('linea')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'linea'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="linea" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.grafico')}>
+    <button onClick={() => setModo('grafico')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'grafico'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="grafico" size={18} />
+    </button>
+  </Tooltip>
+  <Tooltip texto={t('nav.split')}>
+    <button onClick={() => setModo('split')}
+      className={`px-3 py-2 inline-flex items-center text-xs border-b-2 transition-colors
+      ${modo === 'split'
+      ? 'border-gothic-gold text-gothic-gold-light'
+      : 'border-transparent text-gothic-gold/40 hover:text-gothic-gold/70'}`}>
+      <Icono tipo="codice" size={18} />
+    </button>
+  </Tooltip>
  </div>
  )
 }
 
 function AppContent(): React.ReactElement {
- const [modo, setModo] = useState('codice')
- const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
- const { rutaProyecto, cargarProyecto } = useCodice()
+  const [modo, setModo] = useState('codice')
+  const [proyectos, setProyectos] = useState<{ nombre: string; ruta: string; stats: string }[]>([])
+  const [ajustesAbierto, setAjustesAbierto] = useState(false)
+  const { rutaProyecto, cargarProyecto } = useCodice()
  const [libroKey, setLibroKey] = useState(0)
 
   const refrescarProyectos = (): void => {
@@ -346,7 +357,10 @@ function AppContent(): React.ReactElement {
   rutaProyecto={rutaProyecto} proyectos={proyectos}
   onCambiarProyecto={handleCargar} onNuevoProyecto={handleNuevo}
   onCerrarProyecto={handleCerrarProyecto}
+  onAbrirAjustes={() => setAjustesAbierto(true)}
   />
+
+  {ajustesAbierto && <SettingsModal cerrado={() => setAjustesAbierto(false)} />}
 
   {modo === 'codice' ? (
   <ExploradorArchivosGotico />

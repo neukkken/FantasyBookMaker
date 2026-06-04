@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "codice": "Códice",
+    "manuscrito": "Manuscrito",
+    "libro": "Libro",
+    "esquemas": "Esquemas",
+    "linea": "Línea",
+    "grafico": "Gráfico",
+    "split": "Split"
+  },
+  "editor": {
+    "placeholder": "Escribe tu historia...",
+    "bold": "Negrita (Ctrl+B)",
+    "italic": "Cursiva (Ctrl+I)",
+    "highlight": "Resaltar",
+    "dorado": "Texto dorado",
+    "rojo": "Texto rojo",
+    "azul": "Texto azul",
+    "quitarColor": "Quitar color",
+    "insertarImagen": "Insertar imagen",
+    "vincular": "Vincular selección al código",
+    "buscarRef": "Buscar referencia...",
+    "sinResultados": "Sin resultados",
+    "palabras": "palabras",
+    "caracteres": "caracteres",
+    "minLectura": "min de lectura",
+    "sinGuardar": "✕ Sin guardar",
+    "guardadoHace": "✓ Guardado hace {{segs}}s",
+    "guardadoHaceMin": "✓ Guardado hace {{min}}m",
+    "metaDiaria": "+ Meta diaria",
+    "meta": "Meta:"
+  },
+  "contextMenu": {
+    "vincular": "🔗 Vincular al código",
+    "cortar": "Cortar",
+    "copiar": "Copiar",
+    "pegar": "Pegar"
+  },
+  "toast": {
+    "guardado": "Guardado"
+  },
+  "proyectos": {
+    "titulo": "FantasyBook",
+    "seleccionar": "Selecciona o crea un proyecto",
+    "sinProyectos": "No hay proyectos aún",
+    "crear": "Crear Proyecto",
+    "crearNuevo": "Crear nuevo proyecto",
+    "nombre": "Nombre del proyecto",
+    "cancelar": "Cancelar",
+    "eliminar": "Eliminar",
+    "confirmarEliminar": "¿Eliminar {{nombre}}?",
+    "vacio": "vacío"
+  },
+  "codice": {
+    "panel": "Panel de información",
+    "desvincular": "Desvincular"
+  },
+  "settings": {
+    "titulo": "Ajustes",
+    "idioma": "Idioma",
+    "apariencia": "Apariencia",
+    "escritura": "Escritura",
+    "descIdioma": "Idioma de la interfaz y del corrector ortográfico",
+    "proximamente": "Próximamente"
+  }
+}

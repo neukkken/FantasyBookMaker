@@ -8,6 +8,8 @@ interface ElementoCodice {
 }
 
 interface FantasyBookAPI {
+  onVincular: (callback: (texto: string) => void) => void
+  establecerIdioma: (idioma: string) => void
   listarProyectos: () => Promise<{ nombre: string; ruta: string; stats: string }[]>
   crearProyecto: (nombre: string) => Promise<{ exito: boolean; ruta?: string; error?: string }>
   eliminarProyecto: (ruta: string) => Promise<{ exito: boolean; error?: string }>

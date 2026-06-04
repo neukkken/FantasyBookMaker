@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -6,7 +7,7 @@ import { TextStyle } from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import Image from '@tiptap/extension-image'
-import { Extension } from '@tiptap/core'
+import { Extension, Mark } from '@tiptap/core'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
 import { Decoration, DecorationSet } from '@tiptap/pm/view'
 import { useCodice } from '../context/CodiceContext'
@@ -61,6 +62,23 @@ const ExtensionCodiceNombres = Extension.create({
 
 // Extensión para navegación por teclado en el buscador de referencias
 let _busquedaRef = { abierto: false, indice: 0, resultados: [], onEnter: null }
+let _rutaEntidadGlobal = {}
+
+const ExtensionCodiceRef = Mark.create({
+  name: 'codiceRef',
+  inclusive: false,
+  addAttributes() {
+    return {
+      entidad: { default: null }
+    }
+  },
+  parseHTML() {
+    return [{ tag: 'span[data-codice]' }]
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['span', { class: 'codice-entidad', 'data-codice': HTMLAttributes.entidad }, 0]
+  }
+})
 
 const ExtensionNavBusqueda = Extension.create({
   name: 'navBusqueda',
@@ -257,6 +275,7 @@ export default function PanelEscritura({ noPanel }) {
     indexProyecto, ETIQUETAS, ICONOS, CATEGORIAS,
     notificarGuardado, ultimoGuardado
   } = useCodice()
+  const { t, i18n } = useTranslation()
 
   const [capitulos, setCapitulos] = useState([])
   const [capituloActivo, setCapituloActivo] = useState(null)
@@ -274,6 +293,10 @@ export default function PanelEscritura({ noPanel }) {
   const [editandoMeta, setEditandoMeta] = useState(false)
   const [, setTick] = useState(0)
   const [toast, setToast] = useState(null)
+  const [vinculando, setVinculando] = useState(false)
+  const vinculoRef = useRef(null)
+  const vinculoTextoRef = useRef('')
+
   const tituloInputRef = useRef(null)
   const editorContainerRef = useRef(null)
   const busquedaRef = useRef(null)
@@ -315,13 +338,19 @@ export default function PanelEscritura({ noPanel }) {
 
   const entidadesPlanas = useMemo(() => {
     const mapa = {}
+    const mapaRuta = {}
     for (const cat of CATEGORIAS) {
       for (const el of indexProyecto[cat] || []) {
         const nombre = el.metadatos?.nombre
-        if (nombre) mapa[nombre.toLowerCase()] = { ...el, categoria: cat }
+        if (nombre) {
+          const ent = { ...el, categoria: cat }
+          mapa[nombre.toLowerCase()] = ent
+          mapaRuta[el.ruta] = ent
+        }
       }
     }
     _entidadesPlanasGlobal = mapa
+    _rutaEntidadGlobal = mapaRuta
     return mapa
   }, [CATEGORIAS, indexProyecto])
   const resultadosFiltrados = useMemo(() => {
@@ -345,12 +374,14 @@ export default function PanelEscritura({ noPanel }) {
     const handler = (ev) => {
       if (ev.key === 'Escape' && mostrarBuscador) {
         setMostrarBuscador(false); setBusquedaTexto(''); setPosArroba(null)
+        setVinculando(false); vinculoRef.current = null; vinculoTextoRef.current = ''
       }
     }
     const clickHandler = (ev) => {
       if (busquedaRef.current && !busquedaRef.current.contains(ev.target) &&
           !ev.target.closest('.codice-entidad')) {
         setMostrarBuscador(false); setBusquedaTexto(''); setPosArroba(null)
+        setVinculando(false); vinculoRef.current = null; vinculoTextoRef.current = ''
       }
     }
     document.addEventListener('keydown', handler)
@@ -400,13 +431,14 @@ export default function PanelEscritura({ noPanel }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Escribe tu historia...' }),
+      Placeholder.configure({ placeholder: t('editor.placeholder') }),
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
       Image,
       ExtensionCodiceNombres,
-      ExtensionNavBusqueda
+      ExtensionNavBusqueda,
+      ExtensionCodiceRef
     ],
     content: contenidoEditor || '',
     onUpdate: ({ editor: ed }) => {
@@ -428,7 +460,9 @@ export default function PanelEscritura({ noPanel }) {
         class:
           'prose prose-invert max-w-none focus:outline-none ' +
           'font-serif text-gothic-parchment leading-relaxed text-base ' +
-          'min-h-full'
+          'min-h-full',
+        spellcheck: 'true',
+        lang: i18n.language?.startsWith('es') ? 'es' : 'en'
       }
     }
   })
@@ -439,12 +473,27 @@ export default function PanelEscritura({ noPanel }) {
       editor.commands.setContent(contenidoEditor || '')
     }
   }, [capituloActivo, editor, contenidoEditor])
+
+  useEffect(() => {
+    if (!editor) return
+    const dom = editor.view.dom
+    dom.setAttribute('lang', i18n.language?.startsWith('es') ? 'es' : 'en')
+    dom.removeAttribute('spellcheck')
+    requestAnimationFrame(() => dom.setAttribute('spellcheck', 'true'))
+  }, [i18n.language, editor])
+
   const insertarReferencia = useCallback((ent) => {
-    const nombre = ent.metadatos?.nombre || ent.archivo
     if (posArroba !== null && editor) {
       const { from } = editor.state.selection
-      editor.chain().focus().deleteRange({ from: posArroba, to: from }).insertContent(nombre).run()
+      const textoEscrito = editor.state.doc.textBetween(posArroba + 1, from)
+      const textNode = editor.state.schema.text(textoEscrito)
+      const markType = editor.state.schema.marks.codiceRef
+      const tr = editor.state.tr
+        .replaceWith(posArroba, from, textNode)
+        .addMark(posArroba, posArroba + textoEscrito.length, markType.create({ entidad: ent.ruta }))
+      editor.view.dispatch(tr)
     } else {
+      const nombre = ent.metadatos?.nombre || ent.archivo
       editor?.chain().focus().insertContent(nombre).run()
     }
     setMostrarBuscador(false)
@@ -452,17 +501,47 @@ export default function PanelEscritura({ noPanel }) {
     setPosArroba(null)
   }, [posArroba, editor])
 
+  const handleSeleccionarEntidad = useCallback((ent) => {
+    if (vinculando && editor) {
+      const rango = vinculoRef.current
+      if (rango) {
+        const tr = editor.state.tr
+        const markType = editor.state.schema.marks.codiceRef
+        tr.addMark(rango.from, rango.to, markType.create({ entidad: ent.ruta }))
+        editor.view.dispatch(tr)
+      }
+      setVinculando(false)
+      vinculoRef.current = null
+      vinculoTextoRef.current = ''
+    } else {
+      insertarReferencia(ent)
+    }
+    setMostrarBuscador(false)
+    setBusquedaTexto('')
+  }, [vinculando, editor, insertarReferencia])
+
+  useEffect(() => {
+    window.api.onVincular((texto) => {
+      if (!editor) return
+      const { from, to } = editor.state.selection
+      if (from === to) return
+      vinculoRef.current = { from, to }
+      vinculoTextoRef.current = texto
+      setVinculando(true)
+      setBusquedaTexto(texto)
+      setMostrarBuscador(true)
+    })
+  }, [editor])
+
   // Sincronizar ref global con el estado del buscador
   useEffect(() => {
     _busquedaRef.abierto = mostrarBuscador
     _busquedaRef.indice = indiceSel
     _busquedaRef.resultados = resultadosFiltrados
     _busquedaRef.onEnter = mostrarBuscador ? (ent) => {
-      insertarReferencia(ent)
-      setMostrarBuscador(false)
-      setBusquedaTexto('')
+      handleSeleccionarEntidad(ent)
     } : null
-  }, [mostrarBuscador, indiceSel, resultadosFiltrados, insertarReferencia])
+  }, [mostrarBuscador, indiceSel, resultadosFiltrados, handleSeleccionarEntidad])
 
   const guardar = useCallback(async () => {
     if (!capituloActivo) return
@@ -485,10 +564,10 @@ export default function PanelEscritura({ noPanel }) {
       setContenidoAlGuardar(contenidoEditor)
       notificarGuardado()
       await refrescarCapitulos()
-      setToast({ mensaje: 'Guardado', tipo: 'exito' })
+      setToast({ mensaje: t('toast.guardado'), tipo: 'exito' })
       setTimeout(() => setToast(null), 2000)
     } catch { /* ignore */ }
-  }, [rutaProyecto, capituloActivo, contenidoEditor, tituloLocal, contenidoAlGuardar, palabrasHoy, refrescarCapitulos, notificarGuardado])
+  }, [rutaProyecto, capituloActivo, contenidoEditor, tituloLocal, contenidoAlGuardar, palabrasHoy, refrescarCapitulos, notificarGuardado, t])
 
   const insertarImagen = useCallback(() => {
     const input = document.createElement('input')
@@ -543,11 +622,26 @@ export default function PanelEscritura({ noPanel }) {
   const handleClickReferencia = useCallback((e) => {
     const span = e.target.closest('.codice-entidad')
     if (!span) { setInfoPanel(null); return }
-    const nombre = span.textContent.trim()
-    const encontrada = entidadesPlanas[nombre.toLowerCase()]
+    const rutaRef = span.getAttribute('data-codice')
+    let encontrada
+    let pos
+    if (rutaRef) {
+      encontrada = _rutaEntidadGlobal[rutaRef]
+      if (editor) {
+        const doc = editor.state.doc
+        doc.descendants((node, p) => {
+          if (pos || !node.isText) return
+          const mark = node.marks?.find(m => m.type.name === 'codiceRef' && m.attrs.entidad === rutaRef)
+          if (mark) pos = { from: p, to: p + node.nodeSize }
+        })
+      }
+    } else {
+      const nombre = span.textContent.trim()
+      encontrada = entidadesPlanas[nombre.toLowerCase()]
+    }
     if (!encontrada) return
-    setInfoPanel({ x: e.clientX + 12, y: e.clientY - 10, entidad: encontrada })
-  }, [entidadesPlanas])
+    setInfoPanel({ x: e.clientX + 12, y: e.clientY - 10, entidad: encontrada, vinculado: !!rutaRef, pos })
+  }, [entidadesPlanas, editor])
 
   const contenidoPanel = (
     <div className="flex" style={{ height: noPanel ? '100%' : 'calc(100vh - 86px)' }}>
@@ -613,7 +707,7 @@ export default function PanelEscritura({ noPanel }) {
                           type="text"
                           value={busquedaTexto}
                           onChange={(e) => setBusquedaTexto(e.target.value)}
-                          placeholder="Buscar referencia..."
+                          placeholder={t('editor.buscarRef')}
                           className="w-full px-2 py-1.5 rounded-sm text-xs bg-gothic-bg border border-gothic-gold/30
                                      text-gothic-parchment placeholder:text-gothic-gold/30 outline-none
                                      focus:border-gothic-gold/70 font-serif"
@@ -622,17 +716,13 @@ export default function PanelEscritura({ noPanel }) {
                       <div className="max-h-48 overflow-y-auto py-1">
                         {resultadosFiltrados.length === 0 ? (
                           <p className="px-3 py-3 text-xs text-gothic-parchment/30 italic text-center font-serif">
-                            Sin resultados
+                            {t('editor.sinResultados')}
                           </p>
                         ) : (
                           resultadosFiltrados.map((ent, idx) => (
                             <button
                               key={ent.ruta}
-                              onClick={() => {
-                                insertarReferencia(ent)
-                                setMostrarBuscador(false)
-                                setBusquedaTexto('')
-                              }}
+                              onClick={() => handleSeleccionarEntidad(ent)}
                               onMouseEnter={() => setIndiceSel(idx)}
                               className={`w-full text-left px-3 py-2 rounded-sm text-xs font-serif transition-colors flex items-center gap-2
                                          ${idx === indiceSel
@@ -650,7 +740,7 @@ export default function PanelEscritura({ noPanel }) {
                   )}
                 </div>
                 <span className={`text-[10px] font-mono transition-colors ${sinGuardar ? 'text-gothic-blood/70' : 'text-gothic-gold/40'}`}>
-                  {sinGuardar ? '✕ Sin guardar' : ultimoGuardado ? (segs < 60 ? `✓ Guardado hace ${segs}s` : `✓ Guardado hace ${Math.floor(segs / 60)}m`) : ''}
+                  {sinGuardar ? t('editor.sinGuardar') : ultimoGuardado ? (segs < 60 ? t('editor.guardadoHace', { segs }) : t('editor.guardadoHaceMin', { min: Math.floor(segs / 60) })) : ''}
                 </span>
               </div>
             </div>
@@ -659,10 +749,10 @@ export default function PanelEscritura({ noPanel }) {
             <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-gothic-gold/15 bg-gothic-bg/80">
               <button onClick={() => editor?.chain().focus().toggleBold().run()}
                 className={`px-2 py-1 rounded-sm text-xs font-bold transition-colors ${editor?.isActive('bold') ? 'bg-gothic-gold/20 text-gothic-gold-light' : 'text-gothic-parchment/60 hover:text-gothic-parchment hover:bg-gothic-gold/5'}`}
-                title="Negrita (Ctrl+B)">B</button>
+                title={t('editor.bold')}>B</button>
               <button onClick={() => editor?.chain().focus().toggleItalic().run()}
                 className={`px-2 py-1 rounded-sm text-xs italic transition-colors ${editor?.isActive('italic') ? 'bg-gothic-gold/20 text-gothic-gold-light' : 'text-gothic-parchment/60 hover:text-gothic-parchment hover:bg-gothic-gold/5'}`}
-                title="Cursiva (Ctrl+I)"><em>I</em></button>
+                title={t('editor.italic')}><em>I</em></button>
               <span className="w-px h-4 bg-gothic-gold/20 mx-1" />
               <button onClick={() => editor?.chain().focus().toggleHighlight().run()}
                 className={`px-2 py-1 rounded-sm text-xs transition-colors ${editor?.isActive('highlight') ? 'bg-gothic-gold/20 text-gothic-gold-light' : 'text-gothic-parchment/60 hover:text-gothic-parchment hover:bg-gothic-gold/5'}`}
@@ -687,6 +777,17 @@ export default function PanelEscritura({ noPanel }) {
               <button onClick={insertarImagen}
                 className="px-2 py-1 rounded-sm text-xs text-gothic-parchment/60 hover:text-gothic-parchment hover:bg-gothic-gold/5 transition-colors"
                 title="Insertar imagen">🖼️</button>
+              <span className="w-px h-4 bg-gothic-gold/20 mx-1" />
+              <button onClick={() => {
+                if (!editor) return
+                const { from, to } = editor.state.selection
+                if (from === to) return
+                vinculoRef.current = { from, to }
+                setVinculando(true)
+                setMostrarBuscador(true)
+              }}
+                className={`px-2 py-1 rounded-sm text-xs transition-colors ${vinculando ? 'bg-gothic-gold/20 text-gothic-gold-light' : 'text-gothic-parchment/60 hover:text-gothic-parchment hover:bg-gothic-gold/5'}`}
+                title="Vincular selección al código">🔗</button>
             </div>
 
             <style>{`
@@ -788,6 +889,19 @@ export default function PanelEscritura({ noPanel }) {
                           ))}
                         </div>
                       )}
+                      {infoPanel.vinculado && infoPanel.pos && (
+                        <button onClick={() => {
+                          editor.chain().focus()
+                            .setTextSelection(infoPanel.pos)
+                            .unsetMark('codiceRef')
+                            .run()
+                          setInfoPanel(null)
+                        }}
+                          className="mt-2 text-[10px] text-gothic-blood/60 hover:text-gothic-blood
+                                     font-serif transition-colors">
+                          {t('codice.desvincular')}
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
@@ -797,17 +911,17 @@ export default function PanelEscritura({ noPanel }) {
             {/* Footer: contador de palabras y meta diaria */}
             <div className="shrink-0 border-t border-gothic-gold/15 px-4 py-1.5 flex items-center justify-between bg-gothic-bg/80">
               <span className="text-[10px] text-gothic-gold/50 font-mono">
-                {contarPalabras(contenidoEditor).toLocaleString()} palabras · {contarCaracteres(contenidoEditor).toLocaleString()} caracteres
+                {contarPalabras(contenidoEditor).toLocaleString()} {t('editor.palabras')} · {contarCaracteres(contenidoEditor).toLocaleString()} {t('editor.caracteres')}
                 {contarPalabras(contenidoEditor) > 0 && (
                   <span className="ml-2 text-gothic-gold/30">
-                    · ~{Math.max(1, Math.round(contarPalabras(contenidoEditor) / 200))} min de lectura
+                    · ~{Math.max(1, Math.round(contarPalabras(contenidoEditor) / 200))} {t('editor.minLectura')}
                   </span>
                 )}
               </span>
               <div className="flex items-center gap-2">
                 {editandoMeta ? (
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-gothic-gold/40 font-serif">Meta:</span>
+                    <span className="text-[10px] text-gothic-gold/40 font-serif">{t('editor.meta')}</span>
                     <input type="number" min="0" step="100" value={metaDiaria || ''}
                       onChange={(e) => setMetaDiaria(parseInt(e.target.value) || 0)}
                       onKeyDown={async (e) => {
@@ -842,7 +956,7 @@ export default function PanelEscritura({ noPanel }) {
                 ) : (
                   <button onClick={() => setEditandoMeta(true)}
                     className="text-[10px] text-gothic-gold/40 hover:text-gothic-gold/70 font-serif transition-colors">
-                    + Meta diaria
+                    {t('editor.metaDiaria')}
                   </button>
                 )}
               </div>

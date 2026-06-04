@@ -2,6 +2,12 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
+  onVincular: (callback: (texto: string) => void) => {
+    ipcRenderer.on('vincular-texto', (_event, texto) => callback(texto))
+  },
+  establecerIdioma: (idioma: string) => {
+    ipcRenderer.send('establecer-idioma', idioma)
+  },
   listarProyectos: () =>
     ipcRenderer.invoke('listar-proyectos'),
   crearProyecto: (nombre: string) =>

@@ -80,8 +80,6 @@ export default function VistaLibro() {
   const [capitulos, setCapitulos] = useState([])
   const [paginaActual, setPaginaActual] = useState(0)
   const [contenidos, setContenidos] = useState({})
-  const [flipando, setFlipando] = useState(false)
-  const [direccionFlip, setDireccionFlip] = useState(1)
   const [tooltip, setTooltip] = useState(null)
   const [infoPanel, setInfoPanel] = useState(null)
   const [modoSimple, setModoSimple] = useState(() => {
@@ -153,8 +151,6 @@ export default function VistaLibro() {
   // Refs para teclado (evita recrear el listener)
   const paginaActualRef = useRef(paginaActual)
   paginaActualRef.current = paginaActual
-  const flipandoRef = useRef(flipando)
-  flipandoRef.current = flipando
   const totalRef = useRef(paginasVirtuales.length)
   totalRef.current = paginasVirtuales.length
   const pasoRef = useRef(paso)
@@ -165,26 +161,12 @@ export default function VistaLibro() {
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
         const idx = paginaActualRef.current - pasoRef.current
-        if (idx >= 0 && !flipandoRef.current) {
-          setDireccionFlip(-1)
-          setFlipando(true)
-          setTimeout(() => {
-            setPaginaActual(idx)
-            setTimeout(() => setFlipando(false), 50)
-          }, 350)
-        }
+        if (idx >= 0) setPaginaActual(idx)
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault()
         const idx = paginaActualRef.current + pasoRef.current
-        if (idx < totalRef.current && !flipandoRef.current) {
-          setDireccionFlip(1)
-          setFlipando(true)
-          setTimeout(() => {
-            setPaginaActual(idx)
-            setTimeout(() => setFlipando(false), 50)
-          }, 350)
-        }
+        if (idx < totalRef.current) setPaginaActual(idx)
       }
     }
     window.addEventListener('keydown', handler)
@@ -262,14 +244,9 @@ export default function VistaLibro() {
   }, [paginasVirtuales, paginaActual, capitulos, contenidos, rutaProyecto])
   const irA = (idx) => {
     const max = paginasVirtuales.length - 1
-    if (idx < 0 || idx > max || flipando) return
-    setDireccionFlip(idx > paginaActual ? 1 : -1)
-    setFlipando(true)
-    setTimeout(() => {
-      setPaginaActual(idx)
-      setPaginaInput('')
-      setTimeout(() => setFlipando(false), 50)
-    }, 350)
+    if (idx < 0 || idx > max) return
+    setPaginaActual(idx)
+    setPaginaInput('')
   }
 
   const irACapitulo = (capituloIdx) => {
@@ -303,17 +280,6 @@ export default function VistaLibro() {
           <>
             {/* Estilos de animación */}
             <style>{`
-              @keyframes flipForward {
-                0% { transform: perspective(1600px) rotateY(0deg); transform-origin: left center; }
-                100% { transform: perspective(1600px) rotateY(-180deg); transform-origin: left center; }
-              }
-              @keyframes flipBackward {
-                0% { transform: perspective(1600px) rotateY(0deg); transform-origin: right center; }
-                100% { transform: perspective(1600px) rotateY(180deg); transform-origin: right center; }
-              }
-              .flip-forward { animation: flipForward 0.35s ease-in-out forwards; }
-              .flip-backward { animation: flipBackward 0.35s ease-in-out forwards; }
-
               .page-sombra-izq {
                 box-shadow: inset 8px 0 20px -8px rgba(0,0,0,0.15),
                             inset -2px 0 10px -4px rgba(0,0,0,0.05);
@@ -350,7 +316,7 @@ export default function VistaLibro() {
                      onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)}
                      onClick={handleClickReferencia}>
                   {/* Página izquierda */}
-                  <div className={`relative ${direccionFlip === -1 && flipando ? 'flip-backward' : ''} page-sombra-izq z-10 ${modoSimple ? 'w-full' : 'flex-1'}`}
+                  <div className={`relative page-sombra-izq z-10 ${modoSimple ? 'w-full' : 'flex-1'}`}
                        style={{ height: '100%' }}>
                     {tienePaginaIzq ? (
                       <Pagina
@@ -385,7 +351,7 @@ export default function VistaLibro() {
 
                   {/* Página derecha (solo en modo doble) */}
                   {!modoSimple && (
-                    <div className={`relative ${direccionFlip === 1 && flipando ? 'flip-forward' : ''} page-sombra-der z-10 flex-1`}
+                    <div className="relative page-sombra-der z-10 flex-1"
                          style={{ height: '100%' }}>
                       {tienePaginaDer ? (
                         <Pagina
@@ -506,12 +472,12 @@ export default function VistaLibro() {
               {/* Fila 1: navegación */}
               <div className="flex items-center justify-center gap-2">
                 <button onClick={() => irA(0)}
-                        disabled={paginaActual === 0 || flipando}
+                        disabled={paginaActual === 0}
                         className="px-2 py-1 rounded-sm text-xs uppercase tracking-wider font-serif
                                    border border-gothic-gold/30 text-gothic-gold/60
                                    hover:bg-gothic-gold/10 disabled:opacity-30 disabled:cursor-not-allowed">⏮</button>
                 <button onClick={() => irA(paginaActual - paso)}
-                        disabled={paginaActual < paso || flipando}
+                        disabled={paginaActual < paso}
                         className="px-3 py-1 rounded-sm text-xs uppercase tracking-wider font-serif
                                    border border-gothic-gold/30 text-gothic-gold-light
                                    hover:bg-gothic-gold/10 disabled:opacity-30 disabled:cursor-not-allowed">
@@ -522,7 +488,6 @@ export default function VistaLibro() {
                 <select
                   value={capituloActual}
                   onChange={(e) => irACapitulo(parseInt(e.target.value, 10))}
-                  disabled={flipando}
                   className="bg-gothic-bg border border-gothic-gold/30 text-gothic-gold-light text-xs
                              rounded-sm px-2 py-1 font-serif cursor-pointer hover:bg-gothic-gold/10
                              disabled:opacity-30 disabled:cursor-not-allowed"
@@ -551,14 +516,14 @@ export default function VistaLibro() {
                   onChange={(e) => setPaginaInput(e.target.value)}
                   onKeyDown={handleIrAPagina}
                   placeholder="Ir a"
-                  disabled={flipando}
+                  disabled={paginaActual >= paginasVirtuales.length - paso}
                   className="w-14 bg-gothic-bg border border-gothic-gold/30 text-gothic-gold-light text-xs
                              rounded-sm px-2 py-1 font-mono placeholder:text-gothic-gold/30
                              disabled:opacity-30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                 />
 
                 <button onClick={() => irA(paginaActual + paso)}
-                        disabled={paginaActual >= paginasVirtuales.length - paso || flipando}
+                        disabled={paginaActual >= paginasVirtuales.length - paso }
                         className="px-3 py-1 rounded-sm text-xs uppercase tracking-wider font-serif
                                    border border-gothic-gold/30 text-gothic-gold-light
                                    hover:bg-gothic-gold/10 disabled:opacity-30 disabled:cursor-not-allowed">
@@ -568,7 +533,7 @@ export default function VistaLibro() {
                   const ultimo = paginasVirtuales.length - 1
                   irA(modoSimple ? ultimo : (ultimo % 2 === 0 ? ultimo : ultimo - 1))
                 }}
-                        disabled={paginaActual >= paginasVirtuales.length - paso || flipando}
+                        disabled={paginaActual >= paginasVirtuales.length - paso }
                         className="px-2 py-1 rounded-sm text-xs uppercase tracking-wider font-serif
                                    border border-gothic-gold/30 text-gothic-gold/60
                                    hover:bg-gothic-gold/10 disabled:opacity-30 disabled:cursor-not-allowed">⏭</button>
