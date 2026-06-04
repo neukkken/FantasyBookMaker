@@ -332,17 +332,6 @@ export default function PanelEscritura({ noPanel }) {
     setIndiceSel(0)
   }, [busquedaTexto])
 
-  // Sincronizar ref global con el estado del buscador
-  useEffect(() => {
-    _busquedaRef.abierto = mostrarBuscador
-    _busquedaRef.indice = indiceSel
-    _busquedaRef.resultados = resultadosFiltrados
-    _busquedaRef.onEnter = mostrarBuscador ? (ent) => {
-      insertarReferencia(ent)
-      setMostrarBuscador(false)
-      setBusquedaTexto('')
-    } : null
-  }, [mostrarBuscador, indiceSel, resultadosFiltrados, insertarReferencia])
   useEffect(() => {
     if (mostrarBuscador && inputBusquedaRef.current) {
       inputBusquedaRef.current.focus()
@@ -459,6 +448,18 @@ export default function PanelEscritura({ noPanel }) {
     setBusquedaTexto('')
     setPosArroba(null)
   }, [posArroba, editor])
+
+  // Sincronizar ref global con el estado del buscador
+  useEffect(() => {
+    _busquedaRef.abierto = mostrarBuscador
+    _busquedaRef.indice = indiceSel
+    _busquedaRef.resultados = resultadosFiltrados
+    _busquedaRef.onEnter = mostrarBuscador ? (ent) => {
+      insertarReferencia(ent)
+      setMostrarBuscador(false)
+      setBusquedaTexto('')
+    } : null
+  }, [mostrarBuscador, indiceSel, resultadosFiltrados])
 
   const guardar = useCallback(async () => {
     if (!capituloActivo) return
