@@ -30,33 +30,33 @@ All data is stored locally in a SQLite database — no cloud, no accounts, no su
 
 ## Features
 
-### 📖 Manuscript Editor (Manuscrito)
+### Manuscript Editor (Manuscrito)
 - Rich-text chapter editor powered by [TipTap](https://tiptap.dev/)
 - Formatting toolbar: bold, italic, colors, highlights, images
 - Entity reference autocomplete — type `@` to link characters, places, etc.
 - Daily word count goals with progress tracking
 - Auto-save with keyboard shortcuts
 
-### 📚 Book Viewer (Libro)
+### Book Viewer (Libro)
 - Two-page spread with page-flip animations
 - Gothic-styled book with aged paper texture, spine, bookmark ribbon
 - Entity tooltips — hover over linked names to see codex entries
 - Adjustable font size, single/double page mode, fullscreen
 - Keyboard navigation and quick chapter selector
 
-### 🏰 Codex (Códice)
+### Codex (Códice)
 - Organize world information into categories:
   Characters, Locations, Magic, Creatures, Gods, History, Objects, Factions, Classes, Races, and more
 - Rich-text descriptions with the same formatting tools
 - Relational fields — link entities together (e.g., a character's home, race, faction)
 - Custom schema designer — add your own fields per category
 
-### 📊 Visual Tools
+### Visual Tools
 - **Timeline** — chronological view of history entries
 - **Graph** — force-directed relationship graph of all entities, filterable by category
 - **Split View** — browse the Codex alongside your manuscript
 
-### 🎨 Theme
+### Theme
 - Dark gothic aesthetic with gold, parchment, and blood-red accents
 - Inspired by illuminated manuscripts and medieval books
 - Available in seven views accessible from the top navigation bar
